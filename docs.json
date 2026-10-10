@@ -1,0 +1,19 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Zero Trust Homelab",
+  "theme": "mint",
+  "description": "A privacy-safe reference for secure hybrid homelab networking, service access, storage, and recovery.",
+  "colors": {
+    "primary": "#2563EB",
+    "light": "#60A5FA",
+    "dark": "#1D4ED8"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start here",
+        "pages": ["index", "quickstart", "operational-lessons", "case-study-storage-failure", "architecture", "demo-scope"]
+      }
+    ]
+  }
+}

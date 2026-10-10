@@ -1,0 +1,61 @@
+---
+title: "Quickstart"
+description: "Run the documentation locally and understand what this repository can currently launch."
+---
+
+## Preview the docs
+
+Install Git and Node.js 20.17 or newer. From a terminal:
+
+```bash
+git clone https://github.com/HassanTaj/zero-trust-homelab.git
+cd zero-trust-homelab
+npm install --global mint
+mint dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Stop the preview with `Ctrl+C`.
+
+## Run the local network-boundary demo
+
+With Docker Engine and the Compose plugin installed, start the demo from the repository root:
+
+```bash
+docker compose -f demo/compose.yaml up --detach
+```
+
+The public route is available on loopback at `http://127.0.0.1:8081/`; send the `Host: public.localhost` header to select it. The admin route should return HTTP 403 from the host.
+
+On Linux or in Bash:
+
+```bash
+curl -H "Host: public.localhost" http://127.0.0.1:8081/
+curl -i -H "Host: admin.localhost" http://127.0.0.1:8081/
+```
+
+In Windows PowerShell, use `curl.exe` rather than the `curl` alias:
+
+```powershell
+curl.exe -H "Host: public.localhost" http://127.0.0.1:8081/
+curl.exe -i -H "Host: admin.localhost" http://127.0.0.1:8081/
+```
+
+To test the approved private-network path, run:
+
+```bash
+docker compose --profile test -f demo/compose.yaml run --rm private-client
+```
+
+Stop the containers with `docker compose -f demo/compose.yaml down`.
+
+## Verify a backup and restore
+
+From Bash (including Git Bash on Windows), run:
+
+```bash
+bash demo/backup/smoke-test.sh
+```
+
+The exercise initializes a disposable Restic repository, backs up the synthetic fixture, runs `restic check`, restores it to a separate temporary volume, and compares the restored tree to the source. It uses a local Docker volume and is not an off-host backup or a host-loss recovery test. The script cleans up only its uniquely named Compose project and the password file it created.
+
+The network demo is a local demonstration of container-network reachability and an IP allow-list. It is **not** authentication and does not provide the identity/device posture or encrypted overlay of NetBird. It creates no public listener, changes no host firewall, and requires no real home network. The backup fixture is synthetic and disposable; it proves the local restore path only. Never substitute live addresses, domains, keys, certificates, or personal media details into public examples.

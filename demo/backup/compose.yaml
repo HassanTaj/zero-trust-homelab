@@ -1,0 +1,30 @@
+services:
+  restic:
+    image: restic/restic:0.19.1
+    entrypoint: ["restic"]
+    environment:
+      RESTIC_REPOSITORY: /repository
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
+    secrets:
+      - restic_password
+    volumes:
+      - repository:/repository
+      - restore_output:/restore
+      - ./fixture:/source:ro
+    network_mode: none
+
+  backup-checker:
+    image: alpine:3.22
+    command: ["sh", "-ec", "diff -r /source /restore/source"]
+    volumes:
+      - restore_output:/restore:ro
+      - ./fixture:/source:ro
+    network_mode: none
+
+secrets:
+  restic_password:
+    file: ./secrets/restic_password.txt
+
+volumes:
+  repository:
+  restore_output:

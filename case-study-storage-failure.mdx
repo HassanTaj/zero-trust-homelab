@@ -1,0 +1,32 @@
+---
+title: "Case Study: Fail Closed on Storage Loss"
+description: "A sanitized homelab incident pattern and the safeguards added after a storage disconnect."
+---
+
+## Situation
+
+A transient data-disk disconnect caused dependent services to stop. The recovery path treated the event like a normal stack teardown, removing containers while the operator was still determining whether the data volume was present. The files themselves remained on disk, but service recovery took far longer than expected.
+
+## Root cause
+
+Two safety assumptions were missing at the boundary between the host and the application stack:
+
+1. A directory existing at the expected mount path did not prove the expected filesystem was mounted.
+2. A service stop used teardown semantics, so a dependency failure destroyed runtime objects that should have remained available for recovery.
+
+## Changes to the operating model
+
+- Verify the expected filesystem identity before starting services that read or write the data path.
+- Fail closed when the mount check fails; do not let a service interpret an empty mountpoint as empty user data.
+- Use stop semantics for dependency failures and reserve teardown for an explicit, reviewed removal.
+- Make watchdog recovery respect a maintenance hold and verify host and storage state before restarting dependents.
+
+## Outcome and limits
+
+The incident did not result in permanent data loss. The safeguards reduce the chance that a brief mount problem becomes a destructive application-level event, but they do not replace a separate backup or restore drill. The public local demo illustrates only network boundaries; it does not reproduce a real disk failure.
+
+This account is intentionally sanitized: it omits machine identifiers, paths, addresses, personal data, and implementation secrets.
+
+## Scope boundary
+
+This case study documents the operating principles but does not include the private host's recovery scripts or host-level tests. The executable public demos cover container-network reachability and a synthetic local backup/restore drill; they do not reproduce a real disk failure.

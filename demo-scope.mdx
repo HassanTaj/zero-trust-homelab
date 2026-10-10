@@ -1,0 +1,16 @@
+---
+title: "Demo Scope"
+description: "Runnable behavior, verification, and boundaries of the homelab reference exercises."
+---
+
+## What runs here
+
+- `demo/compose.yaml` demonstrates a loopback-only public route and an administration route reachable only from an isolated private container network. Its IP allow-list is a teaching boundary, not user or device identity.
+- `demo/backup/compose.yaml` runs Restic against synthetic fixture files, checks the repository, restores into a separate local volume, and compares the restored files.
+- GitHub Actions runs both smoke tests on pushes and pull requests.
+
+## Boundaries
+
+Neither exercise provisions NetBird, changes router/firewall/DNS settings, accesses a home network, or uses real credentials or data. The backup repository is a temporary local Docker volume, so the exercise demonstrates the restore procedure and data comparison—not off-host protection, host-loss recovery, a real backup schedule, or a measured RPO/RTO.
+
+The network, DNS, storage, and operational patterns are distilled from a private homelab and use only synthetic values here. No private topology, keys, certificates, media, or backup contents are included.

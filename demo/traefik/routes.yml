@@ -1,0 +1,28 @@
+http:
+  routers:
+    public-app:
+      rule: "Host(`public.localhost`)"
+      entryPoints:
+        - web
+      service: public-app
+    admin-app:
+      rule: "Host(`admin.localhost`)"
+      entryPoints:
+        - web
+      middlewares:
+        - private-network-only
+      service: admin-app
+  middlewares:
+    private-network-only:
+      ipAllowList:
+        sourceRange:
+          - "198.18.42.0/24"
+  services:
+    public-app:
+      loadBalancer:
+        servers:
+          - url: "http://public-app:80"
+    admin-app:
+      loadBalancer:
+        servers:
+          - url: "http://admin-app:80"

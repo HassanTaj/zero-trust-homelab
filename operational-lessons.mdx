@@ -1,0 +1,26 @@
+---
+title: "Operational Lessons"
+description: "Privacy-safe patterns for a private homelab connected through an overlay network."
+---
+
+## Two paths, one service identity
+
+A useful hybrid pattern has a remote path through a public edge and encrypted overlay, and a local path through LAN DNS and a LAN-only edge. Both can use the same service hostname and certificate, while the home router exposes no inbound ports. The exact routing and certificate-distribution mechanism is environment-specific and is not included here.
+
+DNS answers decide where a client connects; they are not an access-control mechanism. Administration endpoints need their own identity, device, and network policy, and should not be listed with public application services.
+
+## Fail closed around storage
+
+Before starting a service that can synchronize or mutate user files, verify that the expected filesystem is mounted—not merely that a directory exists. Check a stable filesystem identity and a marker or equivalent ownership assertion. If validation fails, stop the dependent service without removing containers or changing data. This prevents an absent disk from looking like an empty library and propagating destructive changes to clients.
+
+Keep databases, caches, and irreplaceable application state on storage chosen for their performance and recovery needs. A multi-disk pool can be useful for selected bulk data, but it is not RAID and is not a backup.
+
+## Recovery is a tested path
+
+An encrypted backup is only one part of recovery. Define what is included and excluded, test repository integrity, restore into an isolated location, and record the result. A same-host copy does not protect against host loss. Do not claim an RPO that the backup cadence cannot meet.
+
+## Runnable examples and limits
+
+The network demo proves public-versus-private container reachability with an IP allow-list; it does not claim identity-aware authorization. The backup drill verifies a synthetic local Restic repository, integrity check, and isolated restore. It does not prove off-host coverage or recovery after host loss. Both examples use synthetic inputs, require no home-network access, and have explicit teardown. A separate [incident case study](/case-study-storage-failure) records the source-derived fail-closed storage lesson.
+
+Never publish real addresses, domains, peer identities, certificates, personal media details, or backup contents from the source environment.
